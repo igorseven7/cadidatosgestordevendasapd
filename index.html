@@ -221,6 +221,26 @@
             font-weight: bold;
         }
         
+        .loading {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1a2a6c;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         @media (max-width: 600px) {
             .quiz-container {
                 border-radius: 10px;
@@ -449,11 +469,17 @@
             </div>
             <p>Analisaremos suas respostas e entraremos em contato em breve para dar continuidade ao processo.</p>
             <p>Fique atento ao seu e-mail e WhatsApp!</p>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Enviando suas respostas...</p>
+            </div>
+            
             <div class="image-container">
                 <!-- Imagem ilustrativa -->
-                <img src="blob:https://imgur.com/7bf9642f-1a32-4f85-91e3-d4945296c787" alt="Celebração de sucesso">
+                <img src="https://images.unsplash.com/photo-1535223289827-42f1e9919769?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Celebração de sucesso">
             </div>
-            <button class="btn" onclick="restartQuiz()">Finalizar</button>
+            <button class="btn" onclick="sendDataToWebhook()">Finalizar e Enviar Respostas</button>
         </div>
     </div>
 
@@ -461,6 +487,7 @@
         let currentPage = 1;
         const totalPages = 12;
         const userData = {};
+        const webhookURL = 'https://igor-n8n.7hn4wr.easypanel.host/webhook/dcdfe232-fc22-43d0-9caf-085c29691198';
         
         // Atualizar a barra de progresso
         function updateProgressBar() {
@@ -514,6 +541,50 @@
                 nextPage();
             } else {
                 alert('Por favor, digite seu nome completo.');
+            }
+        }
+        
+        // Enviar dados para o webhook
+        async function sendDataToWebhook() {
+            const loadingElement = document.getElementById('loading');
+            const button = document.querySelector('#page12 .btn');
+            
+            // Mostrar loading
+            loadingElement.style.display = 'block';
+            button.disabled = true;
+            button.textContent = 'Enviando...';
+            
+            try {
+                // Adicionar timestamp aos dados
+                userData.timestamp = new Date().toISOString();
+                userData.quizCompleted = true;
+                
+                // Enviar para o webhook
+                const response = await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                if (response.ok) {
+                    console.log('Dados enviados com sucesso para o webhook');
+                    // Redirecionar para página de sucesso ou mostrar mensagem
+                    alert('Obrigado! Suas respostas foram enviadas com sucesso. Entraremos em contato em breve!');
+                    restartQuiz();
+                } else {
+                    throw new Error('Erro ao enviar dados');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao enviar dados:', error);
+                alert('Houve um erro ao enviar suas respostas. Por favor, tente novamente.');
+            } finally {
+                // Esconder loading e reativar botão
+                loadingElement.style.display = 'none';
+                button.disabled = false;
+                button.textContent = 'Finalizar e Enviar Respostas';
             }
         }
         
