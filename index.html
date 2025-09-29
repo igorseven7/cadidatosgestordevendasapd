@@ -236,6 +236,49 @@
             margin: 0 auto;
         }
         
+        .whatsapp-icon {
+            color: #25D366;
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .phone-input-container {
+            position: relative;
+            width: 100%;
+        }
+        
+        .phone-input-container::before {
+            content: "📱";
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            z-index: 1;
+        }
+        
+        .phone-input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        
+        .phone-input:focus {
+            border-color: #1a2a6c;
+            outline: none;
+        }
+        
+        .input-hint {
+            font-size: 14px;
+            color: #666;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            text-align: left;
+            width: 100%;
+        }
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -325,22 +368,24 @@
             </div>
         </div>
         
-       <!-- Página 3.1: Telefone -->
-        <div class="page" id="page3">
+        <!-- Página 4: Telefone/WhatsApp (NOVA) -->
+        <div class="page" id="page4">
             <div class="progress-bar">
                 <div class="progress" id="progressBar"></div>
             </div>
-            <h2>Telefone!</h2>
-            <div class="question">Qual é o seu WhatsApp? 📱</div>
-            <input type="text" class="input-field" id="number" placeholder="Digite seu numero de telefone">
+            <div class="question">Qual é o seu número de WhatsApp? <span class="whatsapp-icon">📱</span></div>
+            <div class="phone-input-container">
+                <input type="tel" class="phone-input" id="phone" placeholder="(11) 99999-9999">
+            </div>
+            <div class="input-hint">Digite seu número com DDD para entrarmos em contato</div>
             <div class="btn-container">
                 <button class="btn btn-back" onclick="prevPage()">Voltar</button>
-                <button class="btn" onclick="saveName()">Próxima</button>
+                <button class="btn" onclick="savePhone()">Próxima</button>
             </div>
         </div>
         
-        <!-- Página 4: Idade -->
-        <div class="page" id="page4">
+        <!-- Página 5: Idade -->
+        <div class="page" id="page5">
             <div class="progress-bar">
                 <div class="progress" id="progressBar"></div>
             </div>
@@ -356,8 +401,8 @@
             </div>
         </div>
         
-        <!-- Página 5: Equipamentos -->
-        <div class="page" id="page5">
+        <!-- Página 6: Equipamentos -->
+        <div class="page" id="page6">
             <div class="progress-bar">
                 <div class="progress" id="progressBar"></div>
             </div>
@@ -373,8 +418,8 @@
             </div>
         </div>
         
-        <!-- Página 6: Habilidade com Redes Sociais -->
-        <div class="page" id="page6">
+        <!-- Página 7: Habilidade com Redes Sociais -->
+        <div class="page" id="page7">
             <div class="progress-bar">
                 <div class="progress" id="progressBar"></div>
             </div>
@@ -390,8 +435,8 @@
             </div>
         </div>
         
-        <!-- Página 7: Disponibilidade -->
-        <div class="page" id="page7">
+        <!-- Página 8: Disponibilidade -->
+        <div class="page" id="page8">
             <div class="progress-bar">
                 <div class="progress" id="progressBar"></div>
             </div>
@@ -407,8 +452,8 @@
             </div>
         </div>
         
-        <!-- Página 8: Comunicação (Nova) -->
-        <div class="page" id="page8">
+        <!-- Página 9: Comunicação (Nova) -->
+        <div class="page" id="page9">
             <div class="progress-bar">
                 <div class="progress" id="progressBar"></div>
             </div>
@@ -424,8 +469,8 @@
             </div>
         </div>
         
-        <!-- Página 9: Ambição 1 (Nova) -->
-        <div class="page" id="page9">
+        <!-- Página 10: Ambição 1 (Nova) -->
+        <div class="page" id="page10">
             <div class="progress-bar">
                 <div class="progress" id="progressBar"></div>
             </div>
@@ -441,8 +486,8 @@
             </div>
         </div>
         
-        <!-- Página 10: Ambição 2 (Nova) -->
-        <div class="page" id="page10">
+        <!-- Página 11: Ambição 2 (Nova) -->
+        <div class="page" id="page11">
             <div class="progress-bar">
                 <div class="progress" id="progressBar"></div>
             </div>
@@ -458,8 +503,8 @@
             </div>
         </div>
         
-        <!-- Página 11: Comunicação (Original) -->
-        <div class="page" id="page11">
+        <!-- Página 12: Comunicação (Original) -->
+        <div class="page" id="page12">
             <div class="progress-bar">
                 <div class="progress" id="progressBar"></div>
             </div>
@@ -475,8 +520,8 @@
             </div>
         </div>
         
-        <!-- Página 12: Finalização -->
-        <div class="page" id="page12">
+        <!-- Página 13: Finalização -->
+        <div class="page" id="page13">
             <div class="success-message">
                 <h2>Parabéns! 🎉</h2>
                 <p>Você completou o quiz com sucesso!</p>
@@ -499,7 +544,7 @@
 
     <script>
         let currentPage = 1;
-        const totalPages = 12;
+        const totalPages = 13;
         const userData = {};
         const webhookURL = 'https://igor-n8n.7hn4wr.easypanel.host/webhook/dcdfe232-fc22-43d0-9caf-085c29691198';
         
@@ -558,10 +603,49 @@
             }
         }
         
+        // Salvar telefone
+        function savePhone() {
+            const phone = document.getElementById('phone').value;
+            if (phone.trim() !== '') {
+                // Validação básica de telefone
+                const phoneRegex = /^\(?\d{2}\)?[\s-]?\d{4,5}[\s-]?\d{4}$/;
+                if (phoneRegex.test(phone.replace(/\s/g, ''))) {
+                    userData.phone = phone;
+                    nextPage();
+                } else {
+                    alert('Por favor, digite um número de telefone válido com DDD.');
+                }
+            } else {
+                alert('Por favor, digite seu número de telefone.');
+            }
+        }
+        
+        // Formatar telefone automaticamente
+        document.addEventListener('DOMContentLoaded', function() {
+            const phoneInput = document.getElementById('phone');
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length <= 11) {
+                        if (value.length <= 2) {
+                            value = value.replace(/(\d{0,2})/, '($1');
+                        } else if (value.length <= 6) {
+                            value = value.replace(/(\d{2})(\d{0,4})/, '($1) $2');
+                        } else if (value.length <= 10) {
+                            value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+                        } else {
+                            value = value.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+                        }
+                        e.target.value = value;
+                    }
+                });
+            }
+        });
+        
         // Enviar dados para o webhook
         async function sendDataToWebhook() {
             const loadingElement = document.getElementById('loading');
-            const button = document.querySelector('#page12 .btn');
+            const button = document.querySelector('#page13 .btn');
             
             // Mostrar loading
             loadingElement.style.display = 'block';
@@ -621,8 +705,9 @@
                 option.classList.remove('selected');
             });
             
-            // Limpar campo de nome
+            // Limpar campos de input
             document.getElementById('fullName').value = '';
+            document.getElementById('phone').value = '';
         }
         
         // Inicializar barra de progresso
